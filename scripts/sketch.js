@@ -1,9 +1,10 @@
 const BACKGROUND_COLOR = [230, 230, 230];
-const BOARD_DISPLAY_SIZE = [600, 600];
-const BOARD_THICK_LINE_WIDTH = 3;
+const BOARD_THICK_LINE_WIDTH = 5;
 const BOARD_THIN_LINE_WIDTH = 1;
 const STARTING_NUMBERS_TEXT_COLOR = [0, 0, 0];
-const ADDED_NUMBERS_TEXT_COLOR = [0, 255, 112];
+const ADDED_NUMBERS_TEXT_COLOR = [0, 200, 0];
+
+ var boardDisplaySize = [500, 500];
 
 function drawSudokuGrid() {
   noFill()
@@ -28,13 +29,13 @@ function drawSudokuGrid() {
 }
 
 function drawSudokuNumber(value, xGrid, yGrid) {
-  x = BOARD_DISPLAY_SIZE[0] * xGrid / 9;
-  y = BOARD_DISPLAY_SIZE[1] * yGrid / 9;
-  text(value, x, y, BOARD_DISPLAY_SIZE[0] / 9, BOARD_DISPLAY_SIZE[1] / 9);
+  x = boardDisplaySize[0] * xGrid / 9;
+  y = boardDisplaySize[1] * yGrid / 9;
+  text(value, x, y, boardDisplaySize[0] / 9, boardDisplaySize[1] / 9);
 }
 
 function drawSudokuNumbers(board) {
-  textSize((BOARD_DISPLAY_SIZE[0] / 9) * 0.5);
+  textSize((boardDisplaySize[0] / 9) * 0.5);
   textAlign(CENTER, CENTER);
   fill(STARTING_NUMBERS_TEXT_COLOR);
   for (let i = 0 ; i < 81 ; i++) {
@@ -54,16 +55,31 @@ function drawSudokuNumbers(board) {
 }
 
 
-function setup() {
-  var canvas = createCanvas(BOARD_DISPLAY_SIZE[0], BOARD_DISPLAY_SIZE[1]);
-  canvas.parent("canvas")
+var canvasDiv = document.getElementById("canvas");
+var board = new Board();
 
-  board = new Board();
-  console.log(board.getDirectPossibilities(0));
+function setup() {
+  var canvas = createCanvas(boardDisplaySize[0], boardDisplaySize[1]);
+  canvas.parent("canvas");
+  boardDisplaySize = [canvasDiv.scrollHeight, canvasDiv.scrollHeight];
+  resizeCanvas(boardDisplaySize[0], boardDisplaySize[1]);
 }
 
 function draw() {
   background(BACKGROUND_COLOR[0], BACKGROUND_COLOR[1], BACKGROUND_COLOR[2]);
   drawSudokuGrid();
   drawSudokuNumbers(board);
+}
+
+function windowResized() {
+  boardDisplaySize = [canvasDiv.scrollHeight, canvasDiv.scrollHeight];
+  resizeCanvas(boardDisplaySize[0], boardDisplaySize[1]);
+}
+
+function solve() {
+  board.solve();
+}
+
+function reset() {
+  board.reset();
 }

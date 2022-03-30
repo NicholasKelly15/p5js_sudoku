@@ -97,20 +97,54 @@ const TESTING_BOARD_3STAR_1 = [
     0, 7, 5, 8, 6, 0, 0, 0, 0
 ]
 
+const TESTING_BOARD_4STAR_1 = [
+    0, 0, 0, 1, 0, 5, 0, 6, 8, 
+    0, 0, 0, 0, 0, 0, 7, 0, 1, 
+    9, 0, 1, 0, 0, 0, 0, 3, 0, 
+    0, 0, 7, 0, 2, 6, 0, 0, 0, 
+    5, 0, 0, 0, 0, 0, 0, 0, 3, 
+    0, 0, 0, 8, 7, 0, 4, 0, 0, 
+    0, 3, 0, 0, 0, 0, 8, 0, 5, 
+    1, 0, 5, 0, 0, 0, 0, 0, 0, 
+    7, 9, 0, 4, 0, 1, 0, 0, 0
+]
+
+const TESTING_BOARD_5STAR_1 = [
+    0, 0, 3, 0, 0, 0, 0, 0, 0, 
+    0, 0, 7, 0, 4, 0, 3, 0, 1, 
+    0, 9, 0, 0, 2, 0, 0, 0, 0, 
+    0, 6, 0, 0, 7, 0, 0, 9, 0, 
+    8, 0, 0, 0, 0, 0, 5, 3, 0, 
+    0, 4, 0, 5, 0, 0, 0, 0, 2, 
+    0, 0, 0, 7, 0, 0, 6, 8, 4, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    9, 0, 4, 0, 0, 1, 0, 0, 0
+]
+
 class Board {
     constructor() {
-        this.board = TESTING_BOARD_3STAR_1;
-        this.startingNumbersBoard = this.board;
-        this.addedNumbersBoard = EMPTY_BOARD;
+        this.board = TESTING_BOARD_4STAR_1;
+        this.startingNumbersBoard = [];
+        for (let i = 0 ; i < this.board.length ; i++) {
+            this.startingNumbersBoard[i] = this.board[i];
+        }
+        this.addedNumbersBoard = [];
+        for (let i = 0 ; i < EMPTY_BOARD.length ; i++) {
+            this.addedNumbersBoard[i] = EMPTY_BOARD[i];
+        }
 
         this.possibilities = []
         for (let i = 0 ; i < 81 ; i++) {
             this.possibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         }
-        this.refreshPossiblities()
     }
 
     getDirectPossibilities(gridIndex) {
+        // if the sudoku grid already has a value at the index
+        if (this.board[gridIndex] !== 0) {
+            return []
+        }
+
         let possibilities = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
         let row = ROWS_TO_INDICES[INDICES_TO_ROWS[gridIndex]];
         let column = COLUMNS_TO_INDICES[INDICES_TO_COLUMNS[gridIndex]];
@@ -131,9 +165,96 @@ class Board {
         return returnArray;
     }
 
-    refreshPossiblities() {
+    // returns true if the value is a possibility in the cellList excluding the gridIndex itself
+    #checkCellsForPossibleValue(cellList, gridIndex, value) {
+        for (let i = 0 ; i < cellList.length ; i++) {
+            for (let j = 0 ; j < this.possibilities[cellList[i]].length ; j++) {
+                if (this.possibilities[cellList[i]][j] === value && cellList[i] !== gridIndex) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // returns 0 if there is no guaranteed answer for the cell, otherwise returns the cell's value
+    getOnlyPossibleCellAnswer(gridIndex) {
+        // if the sudoku grid already has a value at the index
+        if (this.board[gridIndex] !== 0) {
+            return 0;
+        }
+
+        for (let i = 0 ; i < this.possibilities[gridIndex].length ; i++) {
+            let row = ROWS_TO_INDICES[INDICES_TO_ROWS[gridIndex]];
+            let column = COLUMNS_TO_INDICES[INDICES_TO_COLUMNS[gridIndex]];
+            let box = BOXES_TO_INDICES[INDICES_TO_BOXES[gridIndex]];
+
+            // check the row that the gridIndex is in
+            if (!this.#checkCellsForPossibleValue(row, gridIndex, this.possibilities[gridIndex][i])) {
+                return this.possibilities[gridIndex][i]
+            }
+
+            // check the column that the gridIndex is in
+            if (!this.#checkCellsForPossibleValue(column, gridIndex, this.possibilities[gridIndex][i])) {
+                return this.possibilities[gridIndex][i]
+            }
+
+            // check the box that the gridIndex is in
+            if (!this.#checkCellsForPossibleValue(box, gridIndex, this.possibilities[gridIndex][i])) {
+                return this.possibilities[gridIndex][i]
+            }
+
+        }
+
+        return 0;
+    }
+
+    updatePossiblities() {
         for (let i = 0 ; i < 81 ; i++) {
-            this.possibilities[i] = this.getDirectPossibilities(i)
+            this.possibilities[i] = this.getDirectPossibilities(i);
+        }
+        for (let i = 0 ; i < 81 ; i++) {
+            let onlyPossibleAnswer = this.getOnlyPossibleCellAnswer(i);
+            if (onlyPossibleAnswer !== 0) {
+                this.possibilities[i] = [onlyPossibleAnswer];
+            }
+        }
+    }
+
+    solveUntilNoGuaranteedMoves() {
+        this.updatePossiblities();
+        let changed = true;
+        while (changed) {
+            changed = false;
+            for (let i = 0 ; i < 81 ; i++) {
+                if (this.possibilities[i].length === 1) {
+                    this.board[i] = this.possibilities[i][0];
+                    this.addedNumbersBoard[i] = this.board[i];
+                    changed = true;
+                }
+            }
+            this.updatePossiblities();
+        }
+    }
+
+    solve() {
+        this.solveUntilNoGuaranteedMoves()
+    }
+
+    reset() {
+        this.board = [];
+        for (let i = 0 ; i < this.startingNumbersBoard.length ; i++) {
+            this.board[i] = this.startingNumbersBoard[i];
+        }
+
+        this.addedNumbersBoard = [];
+        for (let i = 0 ; i < EMPTY_BOARD.length ; i++) {
+            this.addedNumbersBoard[i] = EMPTY_BOARD[i];
+        }
+
+        this.possibilities = []
+        for (let i = 0 ; i < 81 ; i++) {
+            this.possibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         }
     }
 }
