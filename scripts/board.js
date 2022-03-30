@@ -85,7 +85,7 @@ const EMPTY_BOARD = [
     0, 0, 0, 0, 0, 0, 0, 0, 0
 ]
 
-const TESTING_BOARD_3START_1 = [
+const TESTING_BOARD_3STAR_1 = [
     0, 0, 0, 0, 9, 8, 7, 6, 0, 
     9, 0, 0, 7, 0, 0, 4, 0, 0, 
     7, 2, 0, 0, 4, 0, 0, 0, 0, 
@@ -99,7 +99,9 @@ const TESTING_BOARD_3START_1 = [
 
 class Board {
     constructor() {
-        this.board = TESTING_BOARD_3START_1;
+        this.board = TESTING_BOARD_3STAR_1;
+        this.startingNumbersBoard = this.board;
+        this.addedNumbersBoard = EMPTY_BOARD;
 
         this.possibilities = []
         for (let i = 0 ; i < 81 ; i++) {

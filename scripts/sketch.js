@@ -1,9 +1,12 @@
-const BACKGROUND_COLOR = [200, 200, 200];
+const BACKGROUND_COLOR = [230, 230, 230];
 const BOARD_DISPLAY_SIZE = [600, 600];
 const BOARD_THICK_LINE_WIDTH = 3;
 const BOARD_THIN_LINE_WIDTH = 1;
+const STARTING_NUMBERS_TEXT_COLOR = [0, 0, 0];
+const ADDED_NUMBERS_TEXT_COLOR = [0, 255, 112];
 
 function drawSudokuGrid() {
+  noFill()
   strokeWeight(BOARD_THICK_LINE_WIDTH);
   noSmooth();
 
@@ -33,8 +36,17 @@ function drawSudokuNumber(value, xGrid, yGrid) {
 function drawSudokuNumbers(board) {
   textSize((BOARD_DISPLAY_SIZE[0] / 9) * 0.5);
   textAlign(CENTER, CENTER);
+  fill(STARTING_NUMBERS_TEXT_COLOR);
   for (let i = 0 ; i < 81 ; i++) {
-    value = board.board[i];
+    value = board.startingNumbersBoard[i];
+    if (value != 0) {
+      drawSudokuNumber(value, INDICES_TO_COLUMNS[i], INDICES_TO_ROWS[i]);
+    }
+  }
+
+  fill(ADDED_NUMBERS_TEXT_COLOR);
+  for (let i = 0 ; i < 81 ; i++) {
+    value = board.addedNumbersBoard[i];
     if (value != 0) {
       drawSudokuNumber(value, INDICES_TO_COLUMNS[i], INDICES_TO_ROWS[i]);
     }
@@ -43,10 +55,10 @@ function drawSudokuNumbers(board) {
 
 
 function setup() {
-  createCanvas(BOARD_DISPLAY_SIZE[0], BOARD_DISPLAY_SIZE[1]);
+  var canvas = createCanvas(BOARD_DISPLAY_SIZE[0], BOARD_DISPLAY_SIZE[1]);
+  canvas.parent("canvas")
 
   board = new Board();
-
   console.log(board.getDirectPossibilities(0));
 }
 
