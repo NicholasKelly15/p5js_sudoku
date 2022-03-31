@@ -143,14 +143,29 @@ function intArrayCopy(array) {
 
 class Board {
     constructor() {
-        this.board = WORLD_HARDEST_BOARD;
-        this.startingNumbersBoard = intArrayCopy(this.board)
-        this.addedNumbersBoard = intArrayCopy(EMPTY_BOARD)
+        this.board = intArrayCopy(EMPTY_BOARD);
+        this.startingNumbersBoard = intArrayCopy(this.board);
+        this.addedNumbersBoard = intArrayCopy(EMPTY_BOARD);
 
-        this.possibilities = []
+        this.possibilities = [];
         for (let i = 0 ; i < 81 ; i++) {
-            this.possibilities[i] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            this.possibilities[i] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         }
+    }
+
+    setBoardToThreeStar() {
+        this.board = intArrayCopy(TESTING_BOARD_3STAR_1);
+        this.startingNumbersBoard = intArrayCopy(TESTING_BOARD_3STAR_1);
+    }
+
+    setBoardToFiveStar() {
+        this.board = intArrayCopy(TESTING_BOARD_5STAR_1);
+        this.startingNumbersBoard = intArrayCopy(TESTING_BOARD_5STAR_1);
+    }
+
+    setBoardToInsane() {
+        this.board = intArrayCopy(WORLD_HARDEST_BOARD);
+        this.startingNumbersBoard = intArrayCopy(WORLD_HARDEST_BOARD);
     }
 
     // copies and returns the board
@@ -278,7 +293,7 @@ class Board {
         let fewestPossibilities = 10;
         let bestCell = -1;
         for (let i = 0 ; i < this.board.length ; i++) {
-            if (this.possibilities[i].length < fewestPossibilities && this.board[i] === 0) {
+            if (this.possibilities[i].length < fewestPossibilities && (this.board[i] === 0)) {
                 bestCell = i;
                 fewestPossibilities = this.possibilities[i].length;
             }
@@ -309,12 +324,9 @@ class Board {
 
     solve() {
         this.solveUntilNoGuaranteedMoves();
-        console.log("solve");
-        if (!this.isFull()) {
-            console.log("not full");
+        if (!this.isFull() && this.isValid()) {
             this.updatePossiblities();
             let cellGuess = this.getOpenCellWithFewestPossibilities();
-            console.log(this.possibilities[cellGuess].length);
             for (let i = 0 ; i < this.possibilities[cellGuess].length ; i++) {
                 let savedBoard = this.copy();
                 this.addCellValue(cellGuess, this.possibilities[cellGuess][i]);
@@ -323,13 +335,13 @@ class Board {
                     this.loadCopy(savedBoard);
                     continue;
                 } else {
-                    console.log("yay");
                     return true;
                 }
             }
-            return false; 
-        } else if (this.isFull) {
+        } else if (this.isFull()) {
             return true;
+        } else if (!this.isValid()) {
+            return false;
         }
     }
 

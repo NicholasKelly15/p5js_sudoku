@@ -55,6 +55,8 @@ function drawSudokuNumbers(board) {
 }
 
 
+var editingBoard = false;
+var buttonsDiv = document.getElementById("top-menu");
 var canvasDiv = document.getElementById("canvas");
 var board = new Board();
 
@@ -82,4 +84,45 @@ function solve() {
 
 function reset() {
   board.reset();
+}
+
+function clearMenuButtons() {
+  buttonsDiv.textContent = "";
+}
+
+function addMenuButton(text, className, onClick) {
+  let button = document.createElement("button");
+  button.innerHTML = text;
+  button.className = className;
+  button.onclick = onClick;
+  buttonsDiv.appendChild(button);
+}
+
+function setBoardToThreeStar() {
+  board.setBoardToThreeStar();
+}
+
+function setBoardToFiveStar() {
+  board.setBoardToFiveStar();
+}
+
+function setBoardToInsane() {
+  board.setBoardToInsane();
+}
+
+function editBoard() {
+  editingBoard = true;
+  clearMenuButtons()
+  addMenuButton("DONE", "done-button", stopEditingBoard);
+  addMenuButton("3 STAR", "three-star-button", setBoardToThreeStar);
+  addMenuButton("5 STAR", "five-star-button", setBoardToFiveStar);
+  addMenuButton("INSANE", "insane-button", setBoardToInsane);
+}
+
+function stopEditingBoard() {
+  editingBoard = false;
+  clearMenuButtons();
+  addMenuButton("SOLVE", "solve-button", solve);
+  addMenuButton("RESET", "reset-button", reset);
+  addMenuButton("EDIT", "edit-button", editBoard);
 }

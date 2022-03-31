@@ -44,3 +44,48 @@ html, body {
   font-size: 20px;
   background-color: #ff0000;
 }
+
+.edit-button {
+  margin: 5px;
+  height: 50px;
+  width: 100px;
+  font-family: 'Times New Roman';
+  font-size: 20px;
+  background-color: #777777;
+}
+
+.done-button {
+  margin: 5px;
+  height: 50px;
+  width: 100px;
+  font-family: 'Times New Roman';
+  font-size: 20px;
+  background-color: #00ff00;
+}
+
+.three-star-button {
+  margin: 5px;
+  height: 50px;
+  width: 100px;
+  font-family: 'Times New Roman';
+  font-size: 20px;
+  background-color: #2255ff;
+}
+
+.five-star-button {
+  margin: 5px;
+  height: 50px;
+  width: 100px;
+  font-family: 'Times New Roman';
+  font-size: 20px;
+  background-color: #ffff00;
+}
+
+.insane-button {
+  margin: 5px;
+  height: 50px;
+  width: 100px;
+  font-family: 'Times New Roman';
+  font-size: 20px;
+  background-color: #ff0000;
+}
