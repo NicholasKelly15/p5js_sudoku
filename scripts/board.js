@@ -121,22 +121,75 @@ const TESTING_BOARD_5STAR_1 = [
     9, 0, 4, 0, 0, 1, 0, 0, 0
 ]
 
+const WORLD_HARDEST_BOARD = [
+    8, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 3, 6, 0, 0, 0, 0, 0, 
+    0, 7, 0, 0, 9, 0, 2, 0, 0, 
+    0, 5, 0, 0, 0, 7, 0, 0, 0, 
+    0, 0, 0, 0, 4, 5, 7, 0, 0, 
+    0, 0, 0, 1, 0, 0, 0, 3, 0, 
+    0, 0, 1, 0, 0, 0, 0, 6, 8, 
+    0, 0, 8, 5, 0, 0, 0, 1, 0, 
+    0, 9, 0, 0, 0, 0, 4, 0, 0
+]
+
+function intArrayCopy(array) {
+    newArray = [];
+    for (let i = 0 ; i < array.length ; i++) {
+        newArray[i] = array[i];
+    }
+    return newArray;
+}
+
 class Board {
     constructor() {
-        this.board = TESTING_BOARD_4STAR_1;
-        this.startingNumbersBoard = [];
-        for (let i = 0 ; i < this.board.length ; i++) {
-            this.startingNumbersBoard[i] = this.board[i];
-        }
-        this.addedNumbersBoard = [];
-        for (let i = 0 ; i < EMPTY_BOARD.length ; i++) {
-            this.addedNumbersBoard[i] = EMPTY_BOARD[i];
-        }
+        this.board = WORLD_HARDEST_BOARD;
+        this.startingNumbersBoard = intArrayCopy(this.board)
+        this.addedNumbersBoard = intArrayCopy(EMPTY_BOARD)
 
         this.possibilities = []
         for (let i = 0 ; i < 81 ; i++) {
-            this.possibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            this.possibilities[i] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         }
+    }
+
+    // copies and returns the board
+    copy() {
+        let board = new Board();
+        board.board = intArrayCopy(this.board);
+        board.startingNumbersBoard = intArrayCopy(this.startingNumbersBoard)
+        board.addedNumbersBoard = intArrayCopy(this.addedNumbersBoard);
+        return board;
+    }
+
+    loadCopy(board) {
+        this.board = board.board;
+        this.startingNumbersBoard = board.startingNumbersBoard;
+        this.addedNumbersBoard = board.addedNumbersBoard;
+        this.updatePossiblities();
+    }
+
+    // returns false if there a cell that has no possibilities
+    isValid() {
+        for (let i = 0 ; i < this.board.length ; i++) {
+            if (this.board[i] === 0 && this.possibilities[i].length === 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    isSolution() {
+        
+    }
+
+    isFull() {
+        for (let i = 0 ; i < this.board.length ; i++) {
+            if (this.board[i] === 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     getDirectPossibilities(gridIndex) {
@@ -221,16 +274,33 @@ class Board {
         }
     }
 
+    getOpenCellWithFewestPossibilities() {
+        let fewestPossibilities = 10;
+        let bestCell = -1;
+        for (let i = 0 ; i < this.board.length ; i++) {
+            if (this.possibilities[i].length < fewestPossibilities && this.board[i] === 0) {
+                bestCell = i;
+                fewestPossibilities = this.possibilities[i].length;
+            }
+        }
+        return bestCell;
+    }
+
+    addCellValue(gridIndex, value) {
+        this.board[gridIndex] = value;
+        this.addedNumbersBoard[gridIndex] = value;
+    }
+
     solveUntilNoGuaranteedMoves() {
         this.updatePossiblities();
         let changed = true;
-        while (changed) {
+        while (changed && this.isValid()) {
             changed = false;
             for (let i = 0 ; i < 81 ; i++) {
                 if (this.possibilities[i].length === 1) {
-                    this.board[i] = this.possibilities[i][0];
-                    this.addedNumbersBoard[i] = this.board[i];
+                    this.addCellValue(i, this.possibilities[i][0])
                     changed = true;
+                    break;
                 }
             }
             this.updatePossiblities();
@@ -238,23 +308,38 @@ class Board {
     }
 
     solve() {
-        this.solveUntilNoGuaranteedMoves()
+        this.solveUntilNoGuaranteedMoves();
+        console.log("solve");
+        if (!this.isFull()) {
+            console.log("not full");
+            this.updatePossiblities();
+            let cellGuess = this.getOpenCellWithFewestPossibilities();
+            console.log(this.possibilities[cellGuess].length);
+            for (let i = 0 ; i < this.possibilities[cellGuess].length ; i++) {
+                let savedBoard = this.copy();
+                this.addCellValue(cellGuess, this.possibilities[cellGuess][i]);
+                let solved = this.solve();
+                if (!solved) {
+                    this.loadCopy(savedBoard);
+                    continue;
+                } else {
+                    console.log("yay");
+                    return true;
+                }
+            }
+            return false; 
+        } else if (this.isFull) {
+            return true;
+        }
     }
 
     reset() {
-        this.board = [];
-        for (let i = 0 ; i < this.startingNumbersBoard.length ; i++) {
-            this.board[i] = this.startingNumbersBoard[i];
-        }
-
-        this.addedNumbersBoard = [];
-        for (let i = 0 ; i < EMPTY_BOARD.length ; i++) {
-            this.addedNumbersBoard[i] = EMPTY_BOARD[i];
-        }
+        this.board = intArrayCopy(this.startingNumbersBoard);
+        this.addedNumbersBoard = intArrayCopy(EMPTY_BOARD);
 
         this.possibilities = []
         for (let i = 0 ; i < 81 ; i++) {
-            this.possibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            this.possibilities = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         }
     }
 }
