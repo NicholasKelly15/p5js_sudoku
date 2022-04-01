@@ -1,13 +1,16 @@
 const BACKGROUND_COLOR = [230, 230, 230];
 const BOARD_THICK_LINE_WIDTH = 5;
 const BOARD_THIN_LINE_WIDTH = 1;
+const BOARD_LINE_COLOR = [0, 0, 0];
 const STARTING_NUMBERS_TEXT_COLOR = [0, 0, 0];
 const ADDED_NUMBERS_TEXT_COLOR = [0, 200, 0];
+const MOUSE_HOVER_CELL_HIGHLIGHT_COLOR = [150, 150, 250];
 
  var boardDisplaySize = [500, 500];
 
 function drawSudokuGrid() {
-  noFill()
+  noFill();
+  stroke(BOARD_LINE_COLOR);
   strokeWeight(BOARD_THICK_LINE_WIDTH);
   noSmooth();
 
@@ -28,6 +31,24 @@ function drawSudokuGrid() {
   }
 }
 
+function highlightGridCell(gridX, gridY, color) {
+  let leftBound = gridX * boardDisplaySize[0] / 9;
+  let rightBound = (gridX + 1) * boardDisplaySize[0] / 9;
+  let upperBound = gridY * boardDisplaySize[1] / 9;
+  let lowerBound = (gridY + 1) * boardDisplaySize[1] / 9;
+  fill(color);
+  noStroke();
+  rect(leftBound, upperBound, rightBound - leftBound, lowerBound - upperBound);
+}
+
+function highlightGridCellOfMouse() {
+  if (mouseX >= 0 && mouseX < boardDisplaySize[0] && mouseY > 0 && mouseY < boardDisplaySize[1]) {
+    let gridX = int(mouseX * 9 / boardDisplaySize[0]);
+    let gridY = int(mouseY * 9 / boardDisplaySize[1]);
+    highlightGridCell(gridX, gridY, MOUSE_HOVER_CELL_HIGHLIGHT_COLOR);
+  }
+}
+
 function drawSudokuNumber(value, xGrid, yGrid) {
   x = boardDisplaySize[0] * xGrid / 9;
   y = boardDisplaySize[1] * yGrid / 9;
@@ -37,6 +58,7 @@ function drawSudokuNumber(value, xGrid, yGrid) {
 function drawSudokuNumbers(board) {
   textSize((boardDisplaySize[0] / 9) * 0.5);
   textAlign(CENTER, CENTER);
+  noStroke();
   fill(STARTING_NUMBERS_TEXT_COLOR);
   for (let i = 0 ; i < 81 ; i++) {
     value = board.startingNumbersBoard[i];
@@ -69,6 +91,9 @@ function setup() {
 
 function draw() {
   background(BACKGROUND_COLOR[0], BACKGROUND_COLOR[1], BACKGROUND_COLOR[2]);
+  if (editingBoard) {
+    highlightGridCellOfMouse();
+  }
   drawSudokuGrid();
   drawSudokuNumbers(board);
 }
@@ -112,7 +137,8 @@ function setBoardToInsane() {
 
 function editBoard() {
   editingBoard = true;
-  clearMenuButtons()
+  board.reset();
+  clearMenuButtons();
   addMenuButton("DONE", "done-button", stopEditingBoard);
   addMenuButton("3 STAR", "three-star-button", setBoardToThreeStar);
   addMenuButton("5 STAR", "five-star-button", setBoardToFiveStar);
