@@ -135,11 +135,16 @@ function setBoardToInsane() {
   board.setBoardToInsane();
 }
 
+function clearBoard() {
+  board.clearBoard();
+}
+
 function editBoard() {
   editingBoard = true;
   board.reset();
   clearMenuButtons();
   addMenuButton("DONE", "done-button", stopEditingBoard);
+  addMenuButton("CLEAR", "clear-button", clearBoard)
   addMenuButton("3 STAR", "three-star-button", setBoardToThreeStar);
   addMenuButton("5 STAR", "five-star-button", setBoardToFiveStar);
   addMenuButton("INSANE", "insane-button", setBoardToInsane);

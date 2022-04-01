@@ -168,6 +168,11 @@ class Board {
         this.startingNumbersBoard = intArrayCopy(WORLD_HARDEST_BOARD);
     }
 
+    clearBoard() {
+        this.board = intArrayCopy(EMPTY_BOARD);
+        this.startingNumbersBoard = intArrayCopy(EMPTY_BOARD);
+    }
+
     // copies and returns the board
     copy() {
         let board = new Board();

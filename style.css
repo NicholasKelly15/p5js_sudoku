@@ -89,3 +89,12 @@ html, body {
   font-size: 20px;
   background-color: #ff0000;
 }
+
+.clear-button {
+  margin: 5px;
+  height: 50px;
+  width: 100px;
+  font-family: 'Times New Roman';
+  font-size: 20px;
+  background-color: #eeeeee;
+}
