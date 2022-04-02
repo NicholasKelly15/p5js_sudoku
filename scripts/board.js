@@ -347,7 +347,7 @@ class Board {
         }
     }
 
-    solve() {
+    #solve() {
         this.solveUntilNoGuaranteedMoves();
         if (!this.isFull() && this.isValid()) {
             this.updatePossiblities();
@@ -355,7 +355,7 @@ class Board {
             for (let i = 0 ; i < this.possibilities[cellGuess].length ; i++) {
                 let savedBoard = this.copy();
                 this.addCellValue(cellGuess, this.possibilities[cellGuess][i]);
-                let solved = this.solve();
+                let solved = this.#solve();
                 if (!solved) {
                     this.loadCopy(savedBoard);
                     continue;
@@ -367,6 +367,13 @@ class Board {
             return true;
         } else if (!this.isValid()) {
             return false;
+        }
+    }
+
+    solve() {
+        let worked = this.#solve();
+        if (!worked) {
+            alert("There was no solution to the given puzzle.");
         }
     }
 
