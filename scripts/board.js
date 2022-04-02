@@ -189,18 +189,33 @@ class Board {
         this.updatePossiblities();
     }
 
-    // returns false if there a cell that has no possibilities
+    // returns true if the state appears to still be a possible solution
     isValid() {
+        // make sure that every tile still has a possible value
         for (let i = 0 ; i < this.board.length ; i++) {
             if (this.board[i] === 0 && this.possibilities[i].length === 0) {
                 return false;
             }
         }
+        // make sure that no tiles in the same box, row, or column have the same value
+        for (let i = 0 ; i < this.board.length ; i++) {
+            if (this.board[i] !== 0) {
+                let value = this.board[i];
+                let row = ROWS_TO_INDICES[INDICES_TO_ROWS[i]];
+                let column = COLUMNS_TO_INDICES[INDICES_TO_COLUMNS[i]];
+                let box = BOXES_TO_INDICES[INDICES_TO_BOXES[i]];
+                for (let j = 0 ; j < row.length ; j++) {
+                    if (this.board[row[j]] === value && row[j] !== i) {
+                        return false;
+                    } else if (this.board[column[j]] === value && column[j] !== i) {
+                        return false;
+                    } else if (this.board[box[j]] === value && box[j] !== i) {
+                        return false;
+                    }
+                }
+            }
+        }
         return true;
-    }
-
-    isSolution() {
-        
     }
 
     isFull() {
