@@ -326,6 +326,11 @@ class Board {
         this.addedNumbersBoard[gridIndex] = value;
     }
 
+    addStartingCellValue(gridIndex, value) {
+        this.board[gridIndex] = value;
+        this.startingNumbersBoard[gridIndex] = value;
+    }
+
     solveUntilNoGuaranteedMoves() {
         this.updatePossiblities();
         let changed = true;
